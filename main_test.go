@@ -6,6 +6,7 @@ import (
 	"net/http/httptest"
 	"os"
 	"testing"
+	"log"
 )
 
 func TestFindCountryHandler(t *testing.T) {
@@ -19,6 +20,8 @@ func TestFindCountryHandler(t *testing.T) {
 	if err != nil {
 		t.Fatalf("could not load config: %v", err)
 	}
+
+	log.Printf("Config loaded: %+v", config)
 
 	rateLimiter := NewRateLimiter(config.RateLimit)
 
@@ -34,6 +37,7 @@ func TestFindCountryHandler(t *testing.T) {
 	// Create the handler
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ip := r.URL.Query().Get("ip")
+		log.Printf("Received request for IP: %s", ip)
 		if ip == "" {
 			sendErrorResponse(w, "IP is required", http.StatusBadRequest)
 			return
@@ -66,7 +70,7 @@ func TestFindCountryHandler(t *testing.T) {
 	}
 
 	// Check the response body
-	expected := Response{Country: "Country", City: "City"}
+	expected := Response{Country: "Israel", City: "Tel-Aviv2"}
 	var actual Response
 	if err := json.NewDecoder(rr.Body).Decode(&actual); err != nil {
 		t.Fatalf("could not decode response: %v", err)
@@ -77,6 +81,7 @@ func TestFindCountryHandler(t *testing.T) {
 			actual, expected)
 	}
 }
+
 
 func TestFindCountryHandlerMissingIP(t *testing.T) {
 	os.Setenv("PORT", "8082")

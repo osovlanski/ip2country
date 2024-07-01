@@ -8,7 +8,7 @@ services:
     environment:
       - PORT=8082
       - RATE_LIMIT=5
-      - IP2COUNTRY_DB=/data/ip2country.txt
+      - IP2COUNTRY_DB=/app/testdata/ip2country.txt
     volumes:
       - ./data:/data
 

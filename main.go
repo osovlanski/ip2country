@@ -54,6 +54,7 @@ func main() {
 func findCountry(ip, dbPath string) (string, string, error) {
 	file, err := os.Open(dbPath)
 	if err != nil {
+		log.Printf("Failed to open database file: %v", err)
 		return "", "", err
 	}
 	defer file.Close()
@@ -66,13 +67,16 @@ func findCountry(ip, dbPath string) (string, string, error) {
 			continue
 		}
 		if parts[0] == ip {
+			log.Printf("Found country: %s, city: %s for IP: %s", parts[2], parts[1], ip)
 			return parts[2], parts[1], nil
 		}
 	}
 
 	if err := scanner.Err(); err != nil {
+		log.Printf("Error reading database file: %v", err)
 		return "", "", err
 	}
 
+	log.Printf("IP not found in database: %s", ip)
 	return "", "", errors.New("IP not found")
 }

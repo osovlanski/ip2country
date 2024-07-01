@@ -1,5 +1,8 @@
-# Use the official Golang image as the base image
+# Start from the base golang image
 FROM golang:1.18-alpine
+
+# Install necessary tools
+RUN apk add --no-cache gcc musl-dev
 
 # Set the Current Working Directory inside the container
 WORKDIR /app
@@ -12,6 +15,12 @@ RUN go mod download
 
 # Copy the source from the current directory to the Working Directory inside the container
 COPY . .
+
+# Ensure testdata directory is copied
+COPY testdata /app/testdata
+
+# Run tests
+RUN go test -v ./...
 
 # Build the Go app
 RUN go build -o main .
