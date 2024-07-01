@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  ip2country:
+    build: .
+    ports:
+      - "8082:8082"
+    environment:
+      - PORT=8082
+      - RATE_LIMIT=5
+      - IP2COUNTRY_DB=/data/ip2country.txt
+    volumes:
+      - ./data:/data
+
+  db:
+    image: busybox
+    volumes:
+      - ./data:/data
+    command: sh -c "tail -f /dev/null" # Keeps the container running
