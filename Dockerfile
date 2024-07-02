@@ -16,14 +16,24 @@ RUN go mod download
 # Copy the source from the current directory to the Working Directory inside the container
 COPY . .
 
-# Ensure testdata directory is copied
+# Copy test data if building for testing
+ARG ENV=production
 COPY testdata /app/testdata
 
-# Run tests
-RUN go test -v ./...
+# Ensure test directory is copied
+COPY test /app/test
 
-# Build the Go app
-RUN go build -o main .
+# Set the working directory to cmd/server for the build
+WORKDIR /app/cmd/server
+
+# Run tests only if in testing environment
+RUN if [ "$ENV" = "test" ]; then go test -v /app/test/...; fi
+
+# Build the Go app from the cmd/server directory
+RUN go build -o /app/main .
+
+# Set the working directory back to /app
+WORKDIR /app
 
 # Expose port 8080 to the outside world
 EXPOSE 8080

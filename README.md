@@ -5,7 +5,7 @@ This project implements a simple IP to country service. The service receives an 
 ## Features
 
 - Clear and easy-to-read code
-- Configuration via environment variables
+- Configuration via environment variables using Viper
 - HTTP GET endpoint to retrieve country and city by IP address
 - JSON responses for both success and error cases
 - Rate-limiting mechanism without using external libraries
@@ -40,7 +40,7 @@ This project implements a simple IP to country service. The service receives an 
     ```sh
     echo "PORT=8080" >> .env
     echo "RATE_LIMIT=5" >> .env
-    echo "IP2COUNTRY_DB=/data/ip2country.txt" >> .env
+    echo "IP2COUNTRY_DB=data/ip2country.txt" >> .env
     ```
 
 ### Running Locally
@@ -54,7 +54,7 @@ This project implements a simple IP to country service. The service receives an 
 2. Build and run the application:
 
     ```sh
-    go build -o main .
+    go build -o main ./cmd/server
     ./main
     ```
 
@@ -89,7 +89,7 @@ This project implements a simple IP to country service. The service receives an 
 1. Run tests:
 
     ```sh
-    go test -v
+    go test ./...
     ```
 
 ### Pushing to Docker Hub

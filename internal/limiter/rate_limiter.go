@@ -1,4 +1,5 @@
-package main
+// internal/limiter/rate_limiter.go
+package limiter
 
 import (
 	"sync"

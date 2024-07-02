@@ -2,18 +2,36 @@ version: '3.8'
 
 services:
   ip2country:
-    build: .
+    build:
+      context: .
+      args:
+        ENV: production
     ports:
-      - "8082:8082"
+      - "8082:8080" # Expose internal port 8080 to external port 8082
     environment:
-      - PORT=8082
+      - PORT=8080
       - RATE_LIMIT=5
-      - IP2COUNTRY_DB=/app/testdata/ip2country.txt
+      - IP2COUNTRY_DB=/app/data/ip2country.txt
     volumes:
-      - ./data:/data
+      - ./data:/app/data
 
   db:
     image: busybox
     volumes:
-      - ./data:/data
+      - ./data:/app/data
     command: sh -c "tail -f /dev/null" # Keeps the container running
+
+  # Test service to use testdata
+  ip2country_test:
+    build:
+      context: .
+      args:
+        ENV: test
+    ports:
+      - "8083:8080" # Expose internal port 8080 to external port 8083
+    environment:
+      - PORT=8080
+      - RATE_LIMIT=5
+      - IP2COUNTRY_DB=/app/testdata/ip2country.txt
+    volumes:
+      - ./testdata:/app/testdata

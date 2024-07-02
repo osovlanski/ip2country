@@ -1,4 +1,5 @@
-package main
+// config/config.go
+package config
 
 import (
 	"log"

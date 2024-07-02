@@ -1,2 +1,2 @@
-2.22.233.255,Tel-Aviv2,Israel
-1.1.1.2,Maputo2,Mozambique2
+2.22.233.255,City,Country
+1.1.1.2,City2,Country2
