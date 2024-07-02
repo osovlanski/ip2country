@@ -23,6 +23,9 @@ COPY testdata /app/testdata
 # Ensure test directory is copied
 COPY test /app/test
 
+# Ensure .env file is copied
+COPY .env /app/.env
+
 # Set the working directory to cmd/server for the build
 WORKDIR /app/cmd/server
 

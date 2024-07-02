@@ -2,9 +2,8 @@
 package config
 
 import (
-	"log"
-	"os"
-	"strconv"
+	"github.com/sirupsen/logrus"
+	"github.com/spf13/viper"
 )
 
 type Config struct {
@@ -14,34 +13,29 @@ type Config struct {
 }
 
 func LoadConfig() (*Config, error) {
-	port := os.Getenv("PORT")
-	if port == "" {
-		log.Println("PORT environment variable not set")
-		port = "8080"
-	}
+	viper.SetConfigFile(".env")
+	viper.AutomaticEnv()
 
-	rateLimitStr := os.Getenv("RATE_LIMIT")
-	if rateLimitStr == "" {
-		log.Println("RATE_LIMIT environment variable not set")
-		rateLimitStr = "5"
-	}
-
-	rateLimit, err := strconv.Atoi(rateLimitStr)
-	if err != nil {
-		log.Printf("Invalid RATE_LIMIT value: %v", err)
-		return nil, err
-	}
-
-	ip2CountryDB := os.Getenv("IP2COUNTRY_DB")
-	if ip2CountryDB == "" {
-		log.Println("IP2COUNTRY_DB environment variable not set")
-		ip2CountryDB = "data/ip2country.txt"
+	if err := viper.ReadInConfig(); err != nil {
+		logrus.Warnf("Error reading config file: %v", err)
 	}
 
 	config := &Config{
-		Port:         port,
-		RateLimit:    rateLimit,
-		IP2CountryDB: ip2CountryDB,
+		Port:         viper.GetString("PORT"),
+		RateLimit:    viper.GetInt("RATE_LIMIT"),
+		IP2CountryDB: viper.GetString("IP2COUNTRY_DB"),
+	}
+
+	if config.Port == "" {
+		config.Port = "8080"
+	}
+
+	if config.RateLimit == 0 {
+		config.RateLimit = 5
+	}
+
+	if config.IP2CountryDB == "" {
+		config.IP2CountryDB = "data/ip2country.txt"
 	}
 
 	return config, nil

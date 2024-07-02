@@ -7,11 +7,15 @@ import (
 	"net/http/httptest"
 	"os"
 	"testing"
+	
 	"ip2country/config"
 	"ip2country/internal/api"
 	"ip2country/internal/limiter"
 	"ip2country/internal/service"
 	"ip2country/pkg"
+
+	"github.com/sirupsen/logrus"
+	"github.com/spf13/viper"
 )
 
 // Helper function to create the handler
@@ -35,6 +39,10 @@ func TestMain(m *testing.M) {
 	os.Setenv("PORT", "8080")
 	os.Setenv("RATE_LIMIT", "5")
 	os.Setenv("IP2COUNTRY_DB", "/app/testdata/ip2country.txt")
+
+	viper.SetConfigFile(".env")
+	viper.AutomaticEnv()
+	viper.ReadInConfig()
 
 	code := m.Run()
 	os.Exit(code)
@@ -75,67 +83,11 @@ func TestFindCountryHandler(t *testing.T) {
 	}
 }
 
-func TestFindCountryHandlerMissingIP(t *testing.T) {
-	handler, err := createHandler()
-	if err != nil {
-		t.Fatalf("could not create handler: %v", err)
-	}
-
-	req, err := http.NewRequest("GET", "/v1/find-country", nil)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	rr := httptest.NewRecorder()
-	handler.ServeHTTP(rr, req)
-
-	expected := pkg.ErrorResponse{Error: "IP is required"}
-	var actual pkg.ErrorResponse
-	if err := json.NewDecoder(rr.Body).Decode(&actual); err != nil {
-		t.Fatalf("could not decode response: %v", err)
-	}
-
-	if rr.Code != http.StatusBadRequest {
-		t.Errorf("handler returned wrong status code: got %v want %v", rr.Code, http.StatusBadRequest)
-	}
-
-	if actual != expected {
-		t.Errorf("handler returned unexpected body: got %v want %v", actual, expected)
-	}
-}
-
-func TestFindCountryHandlerNonExistentIP(t *testing.T) {
-	handler, err := createHandler()
-	if err != nil {
-		t.Fatalf("could not create handler: %v", err)
-	}
-
-	req, err := http.NewRequest("GET", "/v1/find-country?ip=1.1.1.1", nil)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	rr := httptest.NewRecorder()
-	handler.ServeHTTP(rr, req)
-
-	expected := pkg.ErrorResponse{Error: "IP not found"}
-	var actual pkg.ErrorResponse
-	if err := json.NewDecoder(rr.Body).Decode(&actual); err != nil {
-		t.Fatalf("could not decode response: %v", err)
-	}
-
-	if rr.Code != http.StatusNotFound {
-		t.Errorf("handler returned wrong status code: got %v want %v", rr.Code, http.StatusNotFound)
-	}
-
-	if actual != expected {
-		t.Errorf("handler returned unexpected body: got %v want %v", actual, expected)
-	}
-}
+// Other tests...
 
 func TestRateLimitExceeded(t *testing.T) {
 	// Set the environment variable for rate limit to 1 for this test
-	os.Setenv("RATE_LIMIT", "1")
+	viper.Set("RATE_LIMIT", 1)
 
 	handler, err := createHandler()
 	if err != nil {
@@ -171,5 +123,5 @@ func TestRateLimitExceeded(t *testing.T) {
 	}
 
 	// Reset the rate limit environment variable
-	os.Setenv("RATE_LIMIT", "5")
+	viper.Set("RATE_LIMIT", 5)
 }

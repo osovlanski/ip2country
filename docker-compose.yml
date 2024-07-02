@@ -15,13 +15,6 @@ services:
     volumes:
       - ./data:/app/data
 
-  db:
-    image: busybox
-    volumes:
-      - ./data:/app/data
-    command: sh -c "tail -f /dev/null" # Keeps the container running
-
-  # Test service to use testdata
   ip2country_test:
     build:
       context: .
@@ -35,3 +28,9 @@ services:
       - IP2COUNTRY_DB=/app/testdata/ip2country.txt
     volumes:
       - ./testdata:/app/testdata
+
+  db:
+    image: busybox
+    volumes:
+      - ./data:/app/data
+    command: sh -c "tail -f /dev/null" # Keeps the container running
