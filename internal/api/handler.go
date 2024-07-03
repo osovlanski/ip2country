@@ -9,6 +9,8 @@ import (
 	"ip2country/pkg"
 )
 
+// MakeFindCountryHandler creates an HTTP handler for the required endpoint (e.g. /v1/find-country).
+// It accepts a CountryService and a RateLimiter as parameters.
 func MakeFindCountryHandler(countryService *service.CountryService, rateLimiter *limiter.RateLimiter) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ip := r.URL.Query().Get("ip")

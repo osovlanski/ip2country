@@ -13,10 +13,13 @@ type CountryService struct {
 	dbPath string
 }
 
+// NewCountryService creates a new CountryService with the given database path.
 func NewCountryService(dbPath string) *CountryService {
 	return &CountryService{dbPath: dbPath}
 }
 
+// FindCountry finds the country and city for a given IP address.
+// It returns the country and city as strings, or an error if the IP is not found.
 func (s *CountryService) FindCountry(ip string) (string, string, error) {
 	file, err := os.Open(s.dbPath)
 	if err != nil {
@@ -25,6 +28,7 @@ func (s *CountryService) FindCountry(ip string) (string, string, error) {
 	}
 	defer file.Close()
 
+	// Scan the file line by line to find the matching IP address.
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		line := scanner.Text()
@@ -38,6 +42,7 @@ func (s *CountryService) FindCountry(ip string) (string, string, error) {
 		}
 	}
 
+	// Check for errors during scanning.
 	if err := scanner.Err(); err != nil {
 		log.Printf("Error reading database file: %v", err)
 		return "", "", err

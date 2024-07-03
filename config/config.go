@@ -7,12 +7,15 @@ import (
 	"strconv"
 )
 
+// Config holds the configuration values for the application.
 type Config struct {
-	Port         string
-	RateLimit    int
-	IP2CountryDB string
+	Port         string // The port the server will listen on.
+	RateLimit    int    // The maximum number of requests per second allowed.
+	IP2CountryDB string // The path to the IP to country database file.
 }
 
+// LoadConfig loads configuration from environment variables file.
+// If values are not found, it uses default values.
 func LoadConfig() (*Config, error) {
 	port := os.Getenv("PORT")
 	if port == "" {
